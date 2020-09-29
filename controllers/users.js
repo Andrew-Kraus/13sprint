@@ -8,13 +8,25 @@ module.exports.getUser = (req, res) => {
 
 module.exports.getUserId = (req, res) => {
   User.findById(req.params.id)
+    .orFail(() => new Error('notFound'))
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Ошибка' }));
+    .catch((err) => {
+      if (err.message === 'notFound') {
+        res.status(404).send({ message: 'Такого пользователя не существует' });
+      }
+      res.status(500).send({ message: 'Ошибка' });
+    });
 };
 
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
+    .orFail(() => new Error('notValid'))
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Ошибка' }));
+    .catch((err) => {
+      if (err.message === 'notValid') {
+        res.status(400).send({ message: 'Переданы некорректные данные' });
+      }
+      res.status(500).send({ message: 'Ошибка' });
+    });
 };

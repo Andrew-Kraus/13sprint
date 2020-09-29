@@ -27,8 +27,13 @@ app.use((req, res, next) => {
 app.use('/users', getUser);
 app.use('/cards', getCard);
 
+app.use('/', (req, res) => {
+  res.set({ 'Content-type': 'Application/json, Charset=utf-8' });
+  res.status(404).end(JSON.stringify({ message: 'Запрашиваемый ресурс не найден' }), 'utf8');
+});
+
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`App listening on port ${PORT}`);
 });
-// 1 Итерация //
+// 2 Итерация //

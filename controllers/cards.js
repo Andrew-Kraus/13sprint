@@ -15,6 +15,12 @@ module.exports.createCard = (req, res) => {
 
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.id)
+    .orFail(new Error('NotValidId'))
     .then((card) => res.send({ data: card }))
-    .catch(() => res.status(500).send({ message: 'Ошибка' }));
+    .catch((err) => {
+      if (err.message === 'NotValidId') {
+        res.status(404).send({ message: 'Переданы некорректные данные' });
+      }
+      res.status(500).send({ message: 'Ошибка' });
+    });
 };
